@@ -1,9 +1,33 @@
-const errorHandler = (error, req, res, next) => {
-    console.log(error.stack.red);
+const ErrorResponse = require("../utils/errorResponse");
 
-    res.status(500).json({
+const errorHandler = (err, req, res, next) => {
+    let error = { ...err };
+
+    error.message = err.message;
+
+    console.log(err);
+
+    // Mongoose bad ObjectId
+    if (err.name === "CastError") {
+        const message = `Resource id ${err.value} is in wrong format`;
+        error = new ErrorResponse(message, 404);
+    }
+
+    // Mongoose duplicate key, use err.code instead of err.name
+    if (err.code === 11000) {
+        const message = "Duplicate field value(s) entered";
+        error = new ErrorResponse(message, 400);
+    }
+
+    // Mongoose Validation error
+    if (err.name === "ValidationError") {
+        const message = Object.values(err.errors).map((value) => value.message);
+        error = new ErrorResponse(message, 400);
+    }
+
+    res.status(error.statusCode || 500).json({
         success: false,
-        error: error.message,
+        error: error.message || "Server Error",
     });
 };
 

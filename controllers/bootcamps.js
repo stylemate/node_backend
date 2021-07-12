@@ -1,3 +1,4 @@
+const ErrorResponse = require("../utils/errorResponse");
 const Bootcamp = require("../models/Bootcamp");
 
 // @desc        Get all bootcamps
@@ -25,14 +26,16 @@ exports.getBootcamp = async (req, res, next) => {
         const bootcamp = await Bootcamp.findById(req.params.id);
 
         if (!bootcamp) {
-            return res
-                .status(400)
-                .json({ success: false, msg: "bootcamp not found" });
+            return next(
+                new ErrorResponse(
+                    `Bootcamp not found with id of ${req.params.id}`,
+                    404
+                )
+            );
         }
 
         res.status(200).json({ success: true, data: bootcamp });
     } catch (error) {
-        //res.status(400).json({ msg: error.message });
         next(error);
     }
 };
@@ -46,7 +49,7 @@ exports.postBootcamp = async (req, res, next) => {
 
         res.status(201).json({ success: true, data: bootcamp });
     } catch (error) {
-        res.status(400).json({ success: false });
+        next(error);
     }
 };
 
@@ -65,9 +68,12 @@ exports.putBootcamp = async (req, res, next) => {
         );
 
         if (!bootcamp) {
-            return res
-                .status(400)
-                .json({ success: false, msg: "bootcamp not found" });
+            return next(
+                new ErrorResponse(
+                    `Bootcamp not found with id of ${req.params.id}`,
+                    404
+                )
+            );
         }
 
         res.status(200).json({
@@ -87,9 +93,12 @@ exports.deleteBootcamp = async (req, res, next) => {
         const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
 
         if (!bootcamp) {
-            return res
-                .status(400)
-                .json({ success: false, msg: "bootcamp not found" });
+            return next(
+                new ErrorResponse(
+                    `Bootcamp not found with id of ${req.params.id}`,
+                    404
+                )
+            );
         }
 
         res.status(200).json({
