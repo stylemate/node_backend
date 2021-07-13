@@ -23,7 +23,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     res.status(200).json({
         success: true,
         count: bootcamps.length,
-        data: bootcamps,
+        data: bootcamps
     });
 });
 
@@ -60,7 +60,7 @@ exports.postBootcamp = asyncHandler(async (req, res, next) => {
 exports.putBootcamp = asyncHandler(async (req, res, next) => {
     const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
         new: true, //updated data will be displayed
-        runValidators: true, //mongoose validator
+        runValidators: true //mongoose validator
     });
 
     if (!bootcamp) {
@@ -74,7 +74,7 @@ exports.putBootcamp = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        data: bootcamp,
+        data: bootcamp
     });
 });
 
@@ -95,7 +95,7 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        data: {},
+        data: {}
     });
 });
 
@@ -117,14 +117,14 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
     const bootcamps = await Bootcamp.find({
         location: {
             $geoWithin: {
-                $centerSphere: [[lng, lat], radius],
-            },
-        },
+                $centerSphere: [[lng, lat], radius]
+            }
+        }
     });
 
     res.status(200).json({
         success: true,
         count: bootcamps.length,
-        data: bootcamps,
+        data: bootcamps
     });
 });
