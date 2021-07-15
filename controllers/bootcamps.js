@@ -16,9 +16,9 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
         (match) => `$${match}`
     );
 
-    console.log(queryString);
+    query = Bootcamp.find(JSON.parse(queryString));
 
-    const bootcamps = await Bootcamp.find();
+    const bootcamps = await query;
 
     res.status(200).json({
         success: true,
