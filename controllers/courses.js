@@ -7,7 +7,6 @@ const Bootcamp = require("../models/Bootcamp");
 // @route       GET /api/v1/courses
 // @route       GET /api/v1/bootcamps/:bootcampId/courses
 // @access      Public
-
 exports.getCourses = asyncHandler(async (req, res, next) => {
     let query;
 
@@ -27,7 +26,6 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
 // @desc        Get a single course
 // @route       GET /api/v1/courses/:id
 // @access      Public
-
 exports.getCourse = asyncHandler(async (req, res, next) => {
     const course = await Course.findById(req.params.id).populate({
         path: "bootcamp",
@@ -50,7 +48,6 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 // @desc        Post a single course
 // @route       POST /api/v1/bootcamps/:bootcampId/courses
 // @access      Private
-
 exports.postCourse = asyncHandler(async (req, res, next) => {
     req.body.bootcamp = req.params.bootcampId;
 
@@ -70,5 +67,48 @@ exports.postCourse = asyncHandler(async (req, res, next) => {
     res.status(200).json({
         success: true,
         data: course
+    });
+});
+
+// @desc        PUT a single course
+// @route       PUT /api/v1/courses/:id
+// @access      Private
+exports.putCourse = asyncHandler(async (req, res, next) => {
+    const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
+        new: true, //updated data will be displayed
+        runValidators: true //mongoose validator
+    });
+
+    if (!course) {
+        return next(
+            new ErrorResponse(`No Course with the id of ${req.params.id}`),
+            404
+        );
+    }
+
+    res.status(200).json({
+        success: true,
+        data: course
+    });
+});
+
+// @desc        DELETE a single course
+// @route       DELETE /api/v1/courses/:id
+// @access      Private
+exports.deleteCourse = asyncHandler(async (req, res, next) => {
+    const course = await Course.findById(req.params.id);
+
+    if (!course) {
+        return next(
+            new ErrorResponse(`No Course with the id of ${req.params.id}`),
+            404
+        );
+    }
+
+    await course.remove();
+
+    res.status(200).json({
+        success: true,
+        data: {}
     });
 });
