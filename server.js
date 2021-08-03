@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const colors = require("colors");
 const fileupload = require("express-fileupload");
+const cookieParser = require("cookie-parser");
 const errorHandler = require("./middleware/error");
 const connectDB = require("./config/db");
 
@@ -23,6 +24,9 @@ const app = express();
 // Body Parser
 app.use(express.json());
 
+// Cookie Parser
+app.use(cookieParser());
+
 // Dev logging middleware
 if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));
@@ -32,7 +36,7 @@ if (process.env.NODE_ENV === "development") {
 app.use(fileupload());
 
 // Set static folder
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 //Mount routers
 app.use("/api/v1/bootcamps", bootcamps);
