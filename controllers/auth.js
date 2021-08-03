@@ -12,7 +12,7 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
 });
 
 // @desc        Register user
-// @route       GET /api/v1/auth/register
+// @route       POST /api/v1/auth/register
 // @access      Public
 exports.register = asyncHandler(async (req, res, next) => {
     const { name, email, password, role } = req.body;
@@ -27,6 +27,38 @@ exports.register = asyncHandler(async (req, res, next) => {
     });
 
     // Create token
+    const token = user.getSignedJwt();
+
+    res.status(200).json({ success: true, token });
+});
+
+// @desc        Login user
+// @route       POST /api/v1/auth/users
+// @access      Public
+exports.login = asyncHandler(async (req, res, next) => {
+    const { email, password } = req.body;
+
+    // Validate email & password (since it doesn't go through mongoose)
+    if (!email || !password) {
+        return next(
+            new ErrorResponse("Please provide valid email and password", 400)
+        );
+    }
+
+    // Check for user
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+        return next(new ErrorResponse("Invalid credentials", 401));
+    }
+
+    // Check if password matches
+    const isMatch = await user.matchPassword(password);
+
+    if (!isMatch) {
+        return next(new ErrorResponse("Invalid credentials", 401));
+    }
+
     const token = user.getSignedJwt();
 
     res.status(200).json({ success: true, token });
